@@ -72,7 +72,9 @@ async def get_tender(tender_id: str, session: ClientSession) -> dict:
         try:
             response = await session.get(f"{BASE_URL}/tenders/{tender_id}", headers=HEADERS)
             data = await response.text()
-            if response.status != 200:
+            if response.status == 404:
+                return {}
+            elif response.status != 200:
                 raise ConnectionError(f"Error {data}")
             return json.loads(data)["data"]
         except Exception as e:
@@ -102,23 +104,15 @@ async def get_competitive_dialogue_data(tender: dict, session: ClientSession) ->
         )
         return True
     if tender_stage2.get("status") in ALLOWED_STATUSES:
-        if tender.get("status") == "complete":
-            LOGGER.warning(
-                f"Dialog {tender['id']} already has complete status",
-                extra=journal_context(
-                    {"MESSAGE_ID": DATABRIDGE_ONLY_PATCH},
-                    {"TENDER_ID": tender["id"]})
+        LOGGER.info(
+            f"For dialog {tender['id']} tender stage 2 already exists, need only patch",
+            extra=journal_context(
+                {"MESSAGE_ID": DATABRIDGE_ONLY_PATCH},
+                {"TENDER_ID": tender["id"]}
             )
-        else:
-            LOGGER.info(
-                f"For dialog {tender['id']} tender stage 2 already exists, need only patch",
-                extra=journal_context(
-                    {"MESSAGE_ID": DATABRIDGE_ONLY_PATCH},
-                    {"TENDER_ID": tender["id"]}
-                )
-            )
+        )
         return False
-    elif tender_stage2.get('status') in REWRITE_STATUSES:
+    elif tender_stage2.get("status") in REWRITE_STATUSES:
         LOGGER.info(
             f"Tender stage 2 id={tender['id']} has bad status need to create new",
             extra=journal_context(
@@ -154,7 +148,7 @@ async def create_tender_stage2(new_tender: dict, session: ClientSession) -> dict
                         {"TENDER_ID": new_tender["dialogueID"]}
                     )
                 )
-                break
+                return {}
             elif response.status != 201:
                 raise ConnectionError(f"Error {data}")
         except Exception as e:
@@ -242,7 +236,7 @@ async def patch_new_tender_status(dialog: dict, session: ClientSession) -> None:
         try:
             response = await session.patch(url, json={"data": patch_data}, headers=HEADERS)
             data = await response.text()
-            if response.status != 201:
+            if response.status != 200:
                 LOGGER.info(
                     f"Unsuccessful patch tender stage2 id={patch_data['id']} with status {patch_data['status']}",
                     extra=journal_context(
@@ -272,7 +266,7 @@ async def patch_new_tender_status(dialog: dict, session: ClientSession) -> None:
             break
 
 
-async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> bool:
+async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> None:
     patch_data = {"id": dialogue_id, "status": "complete"}
     url = f"{BASE_URL}/tenders/{dialogue_id}"
     while True:
@@ -286,7 +280,7 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> bool:
         try:
             response = await session.patch(url, json={"data": patch_data}, headers=HEADERS)
             data = await response.text()
-            if response.status != 201:
+            if response.status != 200:
                 LOGGER.info(
                     f"Unsuccessful patch competitive dialogue id={patch_data['id']} with status {patch_data['status']}",
                     extra=journal_context(
@@ -313,7 +307,7 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> bool:
                     {"DIALOGUE_ID": data["id"], "TENDER_ID": data["stage2TenderID"]}
                 )
             )
-            return True
+            break
 
 
 async def process_tender(session: ClientSession, tender: dict) -> None:
@@ -326,6 +320,9 @@ async def process_tender(session: ClientSession, tender: dict) -> None:
         credentials = await get_tender_credentials(tender["id"], session)
         new_tender = prepare_new_tender_data(tender, credentials)
         tender_dialog = await create_tender_stage2(new_tender, session)
-        await patch_dialog_add_stage2_id(tender_dialog, session)
-        await patch_new_tender_status(tender_dialog, session)
-    await patch_dialog_status(tender["id"], session)
+        if tender_dialog:
+            await patch_dialog_add_stage2_id(tender_dialog, session)
+            await patch_new_tender_status(tender_dialog, session)
+            await patch_dialog_status(tender["id"], session)
+    else:
+        await patch_dialog_status(tender["id"], session)

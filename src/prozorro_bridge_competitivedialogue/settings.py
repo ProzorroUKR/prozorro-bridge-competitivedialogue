@@ -17,14 +17,31 @@ HEADERS = {
     "User-Agent": USER_AGENT,
 }
 ALLOWED_STATUSES = (
-    "active.tendering", "active.pre-qualification", "active.pre-qualification.stand-still",
-    "active.auction", "active.qualification", "active.awarded", "complete", "cancelled",
-    "unsuccessful", "draft.stage2"
+    "active.tendering",
+    "active.pre-qualification",
+    "active.pre-qualification.stand-still",
+    "active.auction",
+    "active.qualification",
+    "active.awarded",
+    "complete",
+    "cancelled",
+    "unsuccessful",
+    "draft.stage2",
 )
 REWRITE_STATUSES = ('draft',)
 COPY_NAME_FIELDS = (
-    "title_ru", "mode", "procurementMethodDetails", "title_en", "description", "description_en",
-    "description_ru", "title", "minimalStep", "value", "procuringEntity", "submissionMethodDetails"
+    "title_ru",
+    "mode",
+    "procurementMethodDetails",
+    "title_en",
+    "description",
+    "description_en",
+    "description_ru",
+    "title",
+    "minimalStep",
+    "value",
+    "procuringEntity",
+    "submissionMethodDetails",
 )
 CD_UA_TYPE = "competitiveDialogueUA"
 CD_EU_TYPE = "competitiveDialogueEU"

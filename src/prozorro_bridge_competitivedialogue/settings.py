@@ -7,8 +7,9 @@ ERROR_INTERVAL = int(os.environ.get("ERROR_INTERVAL", 5))
 
 PUBLIC_API_HOST = os.environ.get("PUBLIC_API_HOST", "https://lb-api-sandbox-2.prozorro.gov.ua")
 API_TOKEN = os.environ.get("API_TOKEN", "competitive_dialogue_data_bridge")
-USER_AGENT = os.environ.get("USER_AGENT", "Databridge competitivedialogue 2.0")
+USER_AGENT = os.environ.get("USER_AGENT", "Databridge competitivedialogue 1.0.0")
 API_VERSION = os.environ.get("API_VERSION", "2.5")
+API_OPT_FIELDS = os.environ.get("API_OPT_FIELDS", "status,procurementMethodType")
 
 BASE_URL = f"{PUBLIC_API_HOST}/api/{API_VERSION}"
 HEADERS = {

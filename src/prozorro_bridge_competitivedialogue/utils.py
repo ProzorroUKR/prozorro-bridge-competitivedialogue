@@ -64,7 +64,6 @@ def prepare_new_tender_data(tender: dict, credentials: dict) -> dict:
             {"TENDER_ID": tender["id"]})
     )
     new_tender = {
-        "title": tender["title"],
         "procurementMethod": "selective",
         "status": "draft",
         "dialogueID": tender["id"]

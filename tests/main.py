@@ -17,7 +17,7 @@ from prozorro_bridge_competitivedialogue.utils import prepare_new_tender_data
 
 @pytest.fixture
 def credentials():
-    return {"owner": "user1", "tender_token": "0" * 32}
+    return {"data": {"owner": "user1", "tender_token": "0" * 32}}
 
 
 @pytest.fixture
@@ -79,7 +79,7 @@ async def test_get_tender_credentials(mocked_logger, credentials, error_data):
         data = await get_tender_credentials("34", session_mock)
 
     assert session_mock.get.await_count == 2
-    assert data == credentials
+    assert data == credentials["data"]
     assert mocked_logger.exception.call_count == 1
     isinstance(mocked_logger.exception.call_args.args[0], ConnectionError)
     assert mocked_sleep.await_count == 1
@@ -368,7 +368,7 @@ async def test_process_tender_without_stage2(mocked_logger, tender_data, credent
 
 @patch("prozorro_bridge_competitivedialogue.utils.LOGGER", MagicMock())
 def test_prepare_new_tender_data_with_lots_and_bids_positive(tender_data, credentials):
-    data = prepare_new_tender_data(tender_data, credentials)
+    data = prepare_new_tender_data(tender_data, credentials["data"])
 
     assert data["tenderID"].endswith(".2")
     assert data["procurementMethod"] == "selective"
@@ -386,7 +386,7 @@ def test_prepare_new_tender_data_with_lots_and_bids_without_features(tender_data
     tender_data["qualifications"][1]["status"] = "pending"
     del tender_data["features"]
 
-    data = prepare_new_tender_data(tender_data, credentials)
+    data = prepare_new_tender_data(tender_data, credentials["data"])
 
     assert data["tenderID"].endswith(".2")
     assert data["procurementMethod"] == "selective"
@@ -400,7 +400,7 @@ def test_prepare_new_tender_data_with_lots_and_bids_without_features(tender_data
 @patch("prozorro_bridge_competitivedialogue.utils.LOGGER", MagicMock())
 def test_prepare_new_tender_data_with_lots_and_bids_no_active_lots(tender_data, credentials):
     tender_data["lots"][0]["status"] = "pending"
-    data = prepare_new_tender_data(tender_data, credentials)
+    data = prepare_new_tender_data(tender_data, credentials["data"])
 
     assert data["tenderID"].endswith(".2")
     assert data["procurementMethod"] == "selective"

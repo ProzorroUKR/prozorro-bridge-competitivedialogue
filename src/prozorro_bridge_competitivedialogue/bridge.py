@@ -53,7 +53,7 @@ async def get_tender_credentials(tender_id: str, session: ClientSession) -> dict
                         {"TENDER_ID": tender_id}
                     ),
                 )
-                return data
+                return data["data"]
             raise ConnectionError(f"Failed to get credentials {data}")
         except Exception as e:
             LOGGER.warning(

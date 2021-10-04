@@ -287,6 +287,32 @@ async def test_patch_dialog_status(mocked_logger, error_data):
 
 
 @pytest.mark.asyncio
+@patch("prozorro_bridge_competitivedialogue.bridge.LOGGER")
+async def test_patch_dialog_status_api_error(mocked_logger, error_data):
+    tender_data = {
+        "id": "33",
+        "stage2TenderID": "34",
+        "dialogueID": "35"
+    }
+    session_mock = AsyncMock()
+    session_mock.patch = AsyncMock(side_effect=[
+        MagicMock(status=412, text=AsyncMock(return_value=error_data)),
+        MagicMock(
+            status=422, text=AsyncMock(return_value=json.dumps({"error": "Can't patch tender in complete status"}))
+        ),
+        MagicMock(status=200, text=AsyncMock(return_value=json.dumps({"data": tender_data}))),
+    ])
+    with patch("prozorro_bridge_competitivedialogue.bridge.asyncio.sleep", AsyncMock()) as mocked_sleep:
+        await patch_dialog_status(tender_data["dialogueID"], session_mock)
+
+    assert session_mock.patch.await_count == 2
+    assert mocked_logger.exception.call_count == 1
+    isinstance(mocked_logger.exception.call_args.args[0], ConnectionError)
+    assert mocked_sleep.await_count == 1
+    assert mocked_logger.error.call_count == 1
+
+
+@pytest.mark.asyncio
 @patch("prozorro_bridge_competitivedialogue.utils.LOGGER")
 async def test_process_tender_skip(mocked_logger):
     tender_data = {

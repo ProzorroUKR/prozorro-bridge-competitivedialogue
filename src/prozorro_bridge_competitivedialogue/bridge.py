@@ -280,7 +280,17 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> None:
         try:
             response = await session.patch(url, json={"data": patch_data}, headers=HEADERS)
             data = await response.text()
-            if response.status != 200:
+            if response.status in (403, 422):
+                LOGGER.error(
+                    f"Stop trying patch dialogue id={patch_data['id']} with status {patch_data['status']}. "
+                    f"Response: {data}",
+                    extra=journal_context(
+                        {"MESSAGE_ID": DATABRIDGE_CD_UNSUCCESSFUL_PATCH_STAGE2_ID},
+                        params={"TENDER_ID": patch_data['id']}
+                    )
+                )
+                return
+            elif response.status != 200:
                 LOGGER.info(
                     f"Unsuccessful patch competitive dialogue id={patch_data['id']} with status {patch_data['status']}",
                     extra=journal_context(

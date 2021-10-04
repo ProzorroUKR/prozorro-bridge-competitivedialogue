@@ -225,7 +225,7 @@ async def patch_new_tender_status(dialog: dict, session: ClientSession) -> None:
         "status": STAGE2_STATUS,
         "dialogueID": dialog["id"]
     }
-    url = f"{BASE_URL}/tenders/{dialog['id']}"
+    url = f"{BASE_URL}/tenders/{patch_data['id']}"
     while True:
         LOGGER.info(
             f"Patch tender stage2 id={patch_data['id']} with status {patch_data['status']}",
@@ -247,7 +247,7 @@ async def patch_new_tender_status(dialog: dict, session: ClientSession) -> None:
                 raise ConnectionError(f"Error {data}")
         except Exception as e:
             LOGGER.warning(
-                "Failed to patch tender",
+                f"Failed to patch tender {patch_data['id']}",
                 extra=journal_context(
                     {"MESSAGE_ID": DATABRIDGE_EXCEPTION},
                 )

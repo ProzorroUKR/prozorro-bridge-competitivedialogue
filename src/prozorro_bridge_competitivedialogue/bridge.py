@@ -260,7 +260,7 @@ async def patch_new_tender_status(dialog: dict, session: ClientSession) -> None:
                 f"Successful patch tender stage2 id={data['id']} with status {patch_data['status']}",
                 extra=journal_context(
                     {"MESSAGE_ID": DATABRIDGE_CD_PATCHED_STAGE2_ID},
-                    {"DIALOGUE_ID": data["id"], "TENDER_ID": data["stage2TenderID"]}
+                    {"DIALOGUE_ID": patch_data["dialogueID"], "TENDER_ID": patch_data["id"]}
                 )
             )
             break
@@ -301,9 +301,10 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> None:
                 raise ConnectionError(f"Error {data}")
         except Exception as e:
             LOGGER.warning(
-                "Failed to patch tender",
+                f"Failed to patch tender {dialogue_id}",
                 extra=journal_context(
                     {"MESSAGE_ID": DATABRIDGE_EXCEPTION},
+                    {"TENDER_ID":dialogue_id}
                 )
             )
             LOGGER.exception(e)
@@ -311,10 +312,10 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> None:
         else:
             data = json.loads(data)["data"]
             LOGGER.info(
-                f"Successful patch competitive dialogue id={data['id']} with status {patch_data['status']}",
+                f"Successful patch competitive dialogue id={dialogue_id} with status {patch_data['status']}",
                 extra=journal_context(
                     {"MESSAGE_ID": DATABRIDGE_SUCCESSFUL_PATCH_DIALOG_STATUS},
-                    {"DIALOGUE_ID": data["id"], "TENDER_ID": data["stage2TenderID"]}
+                    {"DIALOGUE_ID": dialogue_id, "TENDER_ID": data["stage2TenderID"]}
                 )
             )
             break

@@ -40,14 +40,14 @@ def prepare_lot(orig_tender: dict, lot_id: str, items: list) -> dict:
 
 def check_tender(tender: dict) -> bool:
     if (
-            tender["procurementMethodType"] in ("competitiveDialogueUA", "competitiveDialogueEU")
+            tender.get("procurementMethodType", "") in ("competitiveDialogueUA", "competitiveDialogueEU")
             and tender["status"] == "active.stage2.waiting"
     ):
         return True
     else:
         LOGGER.info(
             f"Skipping tender {tender['id']} in status {tender['status']} "
-            f"with procurementMethodType {tender['procurementMethodType']}",
+            f"with procurementMethodType {tender.get('procurementMethodType', '')}",
             extra=journal_context(
                 {"MESSAGE_ID": DATABRIDGE_FOUND_NOLOT},
                 params={"TENDER_ID": tender["id"]}

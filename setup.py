@@ -14,7 +14,7 @@ with open(os.path.join(os.path.dirname(__file__), 'requirements.txt'), 'r') as f
 
 setup(
     name='prozorro_bridge_competitivedialogue',
-    version='1.0.4',
+    version='1.0.6',
     description='',
     packages=find_packages('src'),
     package_dir={"": "src"},

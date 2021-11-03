@@ -329,7 +329,10 @@ async def process_tender(session: ClientSession, tender: dict) -> None:
 
     if create_second_stage:
         credentials = await get_tender_credentials(tender["id"], session)
-        new_tender = prepare_new_tender_data(tender_to_sync, credentials)
+        try:
+            new_tender = prepare_new_tender_data(tender_to_sync, credentials)
+        except KeyError:
+            return None
         tender_dialog = await create_tender_stage2(new_tender, session)
         if tender_dialog:
             await patch_dialog_add_stage2_id(tender_dialog, session)

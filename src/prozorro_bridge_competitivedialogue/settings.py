@@ -42,6 +42,7 @@ COPY_NAME_FIELDS = (
     "value",
     "procuringEntity",
     "submissionMethodDetails",
+    "buyers",
 )
 STAGE_2_EU_TYPE = "competitiveDialogueEU.stage2"
 STAGE_2_UA_TYPE = "competitiveDialogueUA.stage2"

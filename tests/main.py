@@ -323,7 +323,7 @@ async def test_process_tender_skip(mocked_logger):
     session_mock = AsyncMock()
     await process_tender(session_mock, tender_data)
     assert session_mock.patch.await_count == 0
-    assert mocked_logger.info.call_count == 1
+    assert mocked_logger.debug.call_count == 1
     assert mocked_logger.exception.call_count == 0
 
 

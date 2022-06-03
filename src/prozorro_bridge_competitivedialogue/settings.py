@@ -1,21 +1,14 @@
 import os
-from prozorro_crawler.settings import logger, CRAWLER_USER_AGENT
+from prozorro_crawler.settings import logger, PUBLIC_API_HOST
 
-MONGODB_URL = os.environ.get("MONGODB_URL", "mongodb://root:example@localhost:27017")
-MONGODB_DATABASE = os.environ.get("MONGODB_DATABASE", "prozorro-bridge-competitivedialogue")
+LOGGER = logger
+
+API_HOST = os.environ.get("API_HOST", PUBLIC_API_HOST)
+API_OPT_FIELDS = os.environ.get("API_OPT_FIELDS", "status,procurementMethodType").split(",")
+API_TOKEN = os.environ.get("API_TOKEN", "competitive_dialogue_data_bridge")
+
 ERROR_INTERVAL = int(os.environ.get("ERROR_INTERVAL", 5))
 
-PUBLIC_API_HOST = os.environ.get("PUBLIC_API_HOST", "https://lb-api-sandbox-2.prozorro.gov.ua")
-API_TOKEN = os.environ.get("API_TOKEN", "competitive_dialogue_data_bridge")
-API_VERSION = os.environ.get("API_VERSION", "2.5")
-API_OPT_FIELDS = os.environ.get("API_OPT_FIELDS", "status,procurementMethodType")
-
-BASE_URL = f"{PUBLIC_API_HOST}/api/{API_VERSION}"
-HEADERS = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {API_TOKEN}",
-    "User-Agent": CRAWLER_USER_AGENT,
-}
 ALLOWED_STATUSES = (
     "active.tendering",
     "active.pre-qualification",
@@ -47,5 +40,3 @@ COPY_NAME_FIELDS = (
 STAGE_2_EU_TYPE = "competitiveDialogueEU.stage2"
 STAGE_2_UA_TYPE = "competitiveDialogueUA.stage2"
 STAGE2_STATUS = 'draft.stage2'
-
-LOGGER = logger

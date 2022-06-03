@@ -3,15 +3,19 @@ import asyncio
 import json
 
 from prozorro_bridge_competitivedialogue.settings import (
-    LOGGER, 
-    BASE_URL,
-    HEADERS,
+    LOGGER,
     ERROR_INTERVAL,
     ALLOWED_STATUSES,
     REWRITE_STATUSES,
     STAGE2_STATUS,
 )
-from prozorro_bridge_competitivedialogue.utils import journal_context, check_tender, prepare_new_tender_data
+from prozorro_bridge_competitivedialogue.utils import (
+    journal_context,
+    check_tender,
+    prepare_new_tender_data,
+    BASE_URL,
+    HEADERS,
+)
 from prozorro_bridge_competitivedialogue.journal_msg_ids import (
     DATABRIDGE_GET_CREDENTIALS,
     DATABRIDGE_GOT_CREDENTIALS,

@@ -1,7 +1,28 @@
 from copy import deepcopy
 
-from prozorro_bridge_competitivedialogue.settings import LOGGER, STAGE_2_EU_TYPE, STAGE_2_UA_TYPE, COPY_NAME_FIELDS
-from prozorro_bridge_competitivedialogue.journal_msg_ids import DATABRIDGE_FOUND_NOLOT, DATABRIDGE_COPY_TENDER_ITEMS
+from prozorro_crawler.settings import API_VERSION, CRAWLER_USER_AGENT
+
+from prozorro_bridge_competitivedialogue.settings import (
+    LOGGER,
+    STAGE_2_EU_TYPE,
+    STAGE_2_UA_TYPE,
+    COPY_NAME_FIELDS,
+    API_HOST,
+    API_TOKEN,
+)
+from prozorro_bridge_competitivedialogue.journal_msg_ids import (
+    DATABRIDGE_FOUND_NOLOT,
+    DATABRIDGE_COPY_TENDER_ITEMS,
+)
+
+
+BASE_URL = f"{API_HOST}/api/{API_VERSION}"
+
+HEADERS = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {API_TOKEN}",
+    "User-Agent": CRAWLER_USER_AGENT,
+}
 
 
 def journal_context(record: dict = None, params: dict = None) -> dict:

@@ -3,6 +3,7 @@ import asyncio
 from prozorro_crawler.main import main
 
 from prozorro_bridge_competitivedialogue.bridge import process_tender
+from prozorro_bridge_competitivedialogue.settings import API_OPT_FIELDS
 
 
 async def data_handler(session: ClientSession, items: list) -> None:
@@ -14,4 +15,4 @@ async def data_handler(session: ClientSession, items: list) -> None:
 
 
 if __name__ == "__main__":
-    main(data_handler)
+    main(data_handler, opt_fields=API_OPT_FIELDS)

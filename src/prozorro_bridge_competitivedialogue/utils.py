@@ -9,6 +9,7 @@ from prozorro_bridge_competitivedialogue.settings import (
     COPY_NAME_FIELDS,
     API_HOST,
     API_TOKEN,
+    JOURNAL_PREFIX,
 )
 from prozorro_bridge_competitivedialogue.journal_msg_ids import (
     DATABRIDGE_FOUND_NOLOT,
@@ -31,7 +32,7 @@ def journal_context(record: dict = None, params: dict = None) -> dict:
     if params is None:
         params = {}
     for k, v in params.items():
-        record["JOURNAL_" + k] = v
+        record[JOURNAL_PREFIX + k] = v
     return record
 
 

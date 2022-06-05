@@ -9,6 +9,8 @@ API_TOKEN = os.environ.get("API_TOKEN", "competitive_dialogue_data_bridge")
 
 ERROR_INTERVAL = int(os.environ.get("ERROR_INTERVAL", 5))
 
+JOURNAL_PREFIX = os.environ.get("JOURNAL_PREFIX", "JOURNAL_")
+
 ALLOWED_STATUSES = (
     "active.tendering",
     "active.pre-qualification",

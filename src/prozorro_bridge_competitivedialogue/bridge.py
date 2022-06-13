@@ -328,10 +328,11 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> None:
 async def process_tender(session: ClientSession, tender: dict) -> None:
     if not check_tender(tender):
         return None
-    tender_to_sync = await get_tender(tender["id"], session)
-    create_second_stage = await check_second_stage_tender(tender_to_sync, session)
+
+    create_second_stage = await check_second_stage_tender(tender, session)
 
     if create_second_stage:
+        tender_to_sync = await get_tender(tender["id"], session)
         credentials = await get_tender_credentials(tender["id"], session)
         try:
             new_tender = prepare_new_tender_data(tender_to_sync, credentials)

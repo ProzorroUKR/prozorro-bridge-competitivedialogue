@@ -8,6 +8,7 @@ from prozorro_bridge_competitivedialogue.bridge import process_tender
 API_OPT_FIELDS = (
     "status",
     "procurementMethodType",
+    "stage2TenderID",
 )
 
 

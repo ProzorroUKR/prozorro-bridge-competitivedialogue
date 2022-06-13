@@ -344,7 +344,6 @@ async def test_process_tender_with_stage2(mocked_logger):
     }
     session_mock = AsyncMock()
     session_mock.get = AsyncMock(side_effect=[
-        MagicMock(status=200, text=AsyncMock(return_value=json.dumps({"data": tender_data}))),
         MagicMock(status=200, text=AsyncMock(return_value=json.dumps({"data": tender_data_stage2}))),
     ])
     session_mock.patch = AsyncMock(side_effect=[
@@ -354,7 +353,7 @@ async def test_process_tender_with_stage2(mocked_logger):
     await process_tender(session_mock, tender_data)
 
     assert session_mock.patch.await_count == 1
-    assert session_mock.get.await_count == 2
+    assert session_mock.get.await_count == 1
     assert mocked_logger.info.call_count == 3
     assert mocked_logger.exception.call_count == 0
 

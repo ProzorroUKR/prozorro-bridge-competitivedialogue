@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from prozorro_bridge_competitivedialogue.bridge import (
     get_tender_credentials,
     get_tender,
-    get_competitive_dialogue_data,
+    check_second_stage_tender,
     create_tender_stage2,
     patch_dialog_add_stage2_id,
     patch_new_tender_status,
@@ -125,50 +125,50 @@ async def test_get_tender_not_exists(mocked_logger, error_data):
 
 @pytest.mark.asyncio
 @patch("prozorro_bridge_competitivedialogue.bridge.LOGGER", MagicMock())
-async def test_get_competitive_dialogue_data_exists_second_stage(tender_data):
+async def test_check_second_stage_tender_exists_second_stage(tender_data):
     tender_data["stage2TenderID"] = "34"
     tender_data["status"] = "active.tendering"
     session_mock = AsyncMock()
     session_mock.get = AsyncMock(
         return_value=MagicMock(status=200, text=AsyncMock(return_value=json.dumps({"data": tender_data})))
     )
-    create_second_stage = await get_competitive_dialogue_data(tender_data, session_mock)
+    create_second_stage = await check_second_stage_tender(tender_data, session_mock)
     assert create_second_stage is False
 
 
 @pytest.mark.asyncio
 @patch("prozorro_bridge_competitivedialogue.bridge.LOGGER", MagicMock())
-async def test_get_competitive_dialogue_data_not_exists_second_stage(tender_data):
+async def test_check_second_stage_tender_not_exists_second_stage(tender_data):
     tender_data["stage2TenderID"] = "34"
     session_mock = AsyncMock()
     session_mock.get = AsyncMock(
         return_value=MagicMock(status=404, text=AsyncMock(return_value=json.dumps({})))
     )
-    create_second_stage = await get_competitive_dialogue_data(tender_data, session_mock)
+    create_second_stage = await check_second_stage_tender(tender_data, session_mock)
     assert create_second_stage is True
 
 
 @pytest.mark.asyncio
 @patch("prozorro_bridge_competitivedialogue.bridge.LOGGER", MagicMock())
-async def test_get_competitive_dialogue_data_exists_second_stage_id(tender_data):
+async def test_check_second_stage_tender_exists_second_stage_id(tender_data):
     session_mock = AsyncMock()
     session_mock.get = AsyncMock(
         return_value=MagicMock(status=200, text=AsyncMock(return_value=json.dumps({"data": tender_data})))
     )
-    create_second_stage = await get_competitive_dialogue_data(tender_data, session_mock)
+    create_second_stage = await check_second_stage_tender(tender_data, session_mock)
     assert create_second_stage is True
 
 
 @pytest.mark.asyncio
 @patch("prozorro_bridge_competitivedialogue.bridge.LOGGER", MagicMock())
-async def test_get_competitive_dialogue_data_exists_second_stage_draft(tender_data):
+async def test_check_second_stage_tender_exists_second_stage_draft(tender_data):
     tender_data["status"] = "draft"
     tender_data["stage2TenderID"] = "34"
     session_mock = AsyncMock()
     session_mock.get = AsyncMock(
         return_value=MagicMock(status=404, text=AsyncMock(return_value=json.dumps({"data": tender_data})))
     )
-    create_second_stage = await get_competitive_dialogue_data(tender_data, session_mock)
+    create_second_stage = await check_second_stage_tender(tender_data, session_mock)
     assert create_second_stage is True
 
 

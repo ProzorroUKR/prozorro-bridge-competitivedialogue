@@ -3,7 +3,12 @@ import asyncio
 from prozorro_crawler.main import main
 
 from prozorro_bridge_competitivedialogue.bridge import process_tender
-from prozorro_bridge_competitivedialogue.settings import API_OPT_FIELDS
+
+
+API_OPT_FIELDS = (
+    "status",
+    "procurementMethodType",
+)
 
 
 async def data_handler(session: ClientSession, items: list) -> None:

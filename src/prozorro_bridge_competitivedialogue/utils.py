@@ -62,8 +62,8 @@ def prepare_lot(orig_tender: dict, lot_id: str, items: list) -> dict:
 
 def check_tender(tender: dict) -> bool:
     if (
-            tender.get("procurementMethodType", "") in ("competitiveDialogueUA", "competitiveDialogueEU")
-            and tender.get("status", "") == "active.stage2.waiting"
+        tender.get("procurementMethodType", "") in ("competitiveDialogueUA", "competitiveDialogueEU")
+        and tender.get("status", "") == "active.stage2.waiting"
     ):
         return True
     else:

@@ -1,7 +1,29 @@
 from copy import deepcopy
 
-from prozorro_bridge_competitivedialogue.settings import LOGGER, STAGE_2_EU_TYPE, STAGE_2_UA_TYPE, COPY_NAME_FIELDS
-from prozorro_bridge_competitivedialogue.journal_msg_ids import DATABRIDGE_FOUND_NOLOT, DATABRIDGE_COPY_TENDER_ITEMS
+from prozorro_crawler.settings import API_VERSION, CRAWLER_USER_AGENT
+
+from prozorro_bridge_competitivedialogue.settings import (
+    LOGGER,
+    STAGE_2_EU_TYPE,
+    STAGE_2_UA_TYPE,
+    COPY_NAME_FIELDS,
+    API_HOST,
+    API_TOKEN,
+    JOURNAL_PREFIX,
+)
+from prozorro_bridge_competitivedialogue.journal_msg_ids import (
+    DATABRIDGE_FOUND_NOLOT,
+    DATABRIDGE_COPY_TENDER_ITEMS,
+)
+
+
+BASE_URL = f"{API_HOST}/api/{API_VERSION}"
+
+HEADERS = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {API_TOKEN}",
+    "User-Agent": CRAWLER_USER_AGENT,
+}
 
 
 def journal_context(record: dict = None, params: dict = None) -> dict:
@@ -10,7 +32,7 @@ def journal_context(record: dict = None, params: dict = None) -> dict:
     if params is None:
         params = {}
     for k, v in params.items():
-        record["JOURNAL_" + k] = v
+        record[JOURNAL_PREFIX + k] = v
     return record
 
 
@@ -40,8 +62,8 @@ def prepare_lot(orig_tender: dict, lot_id: str, items: list) -> dict:
 
 def check_tender(tender: dict) -> bool:
     if (
-            tender.get("procurementMethodType", "") in ("competitiveDialogueUA", "competitiveDialogueEU")
-            and tender.get("status", "") == "active.stage2.waiting"
+        tender.get("procurementMethodType", "") in ("competitiveDialogueUA", "competitiveDialogueEU")
+        and tender.get("status", "") == "active.stage2.waiting"
     ):
         return True
     else:

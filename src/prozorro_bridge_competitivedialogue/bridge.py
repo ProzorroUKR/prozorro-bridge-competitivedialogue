@@ -3,15 +3,19 @@ import asyncio
 import json
 
 from prozorro_bridge_competitivedialogue.settings import (
-    LOGGER, 
-    BASE_URL,
-    HEADERS,
+    LOGGER,
     ERROR_INTERVAL,
     ALLOWED_STATUSES,
     REWRITE_STATUSES,
     STAGE2_STATUS,
 )
-from prozorro_bridge_competitivedialogue.utils import journal_context, check_tender, prepare_new_tender_data
+from prozorro_bridge_competitivedialogue.utils import (
+    journal_context,
+    check_tender,
+    prepare_new_tender_data,
+    BASE_URL,
+    HEADERS,
+)
 from prozorro_bridge_competitivedialogue.journal_msg_ids import (
     DATABRIDGE_GET_CREDENTIALS,
     DATABRIDGE_GOT_CREDENTIALS,
@@ -89,7 +93,7 @@ async def get_tender(tender_id: str, session: ClientSession) -> dict:
             await asyncio.sleep(ERROR_INTERVAL)
 
 
-async def get_competitive_dialogue_data(tender: dict, session: ClientSession) -> bool:
+async def check_second_stage_tender(tender: dict, session: ClientSession) -> bool:
     if "stage2TenderID" not in tender:
         return True
     
@@ -324,10 +328,11 @@ async def patch_dialog_status(dialogue_id: str, session: ClientSession) -> None:
 async def process_tender(session: ClientSession, tender: dict) -> None:
     if not check_tender(tender):
         return None
-    tender_to_sync = await get_tender(tender["id"], session)
-    create_second_stage = await get_competitive_dialogue_data(tender_to_sync, session)
+
+    create_second_stage = await check_second_stage_tender(tender, session)
 
     if create_second_stage:
+        tender_to_sync = await get_tender(tender["id"], session)
         credentials = await get_tender_credentials(tender["id"], session)
         try:
             new_tender = prepare_new_tender_data(tender_to_sync, credentials)
